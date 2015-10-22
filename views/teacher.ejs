@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Lesson</title>
+	<link rel="stylesheet" href="/styles/normalize.css">
+	<link rel="stylesheet" href="/styles/skeleton.css">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+	<style>
+	
+		* {
+			box-sizing: border-box;
+		}
+		#main {
+			width: 100%;
+			max-width: 100%;
+			background-size: cover;
+			background-color: #fcfcfc;
+			box-shadow: 0px 0px 10px 0px #969594;
+			color: #333;
+		}
+
+		header {
+			padding: 32px;
+			height: 96px;
+			background: linear-gradient(rgba(7, 148, 57, 1), rgba(7, 148, 57, 1));
+			width: 100%;
+			color: white;
+		}
+
+		header ul {
+			list-style-type: none;
+			width: 50%;
+			float: left;
+		}
+
+		header ul li {
+			float: left;
+		}
+
+		#main .row {
+			width: 100%;
+			max-width: 100%;
+			padding: 4%;
+		}
+		
+		#tools {
+			width: calc(100% - 730px);
+			height: 100%;
+			float: left;
+		}
+
+		#tools ul {
+			list-style-type: none;
+		}
+
+		#tools ul li {
+			width: 100%;
+			font-size: 32px;
+			text-align: center;
+			list-style-type: none;
+		}
+
+		canvas {
+			border: 1px #e0e0e0 dashed;
+			background: #ffffff;
+		}
+
+		input[type='color'] {
+			outline: none;
+			border: none;
+			padding: 0;
+			height: 30px;
+			width: 30px;
+		}
+		
+		pre code {
+			overflow-y: scroll;
+			display: inline-block;
+		}
+
+		#logo {
+			height: 32px;
+		}
+		
+		a.button {
+			color: white;
+		}
+		
+		.right li {
+			float: right;
+		}
+		
+		input {
+			width: 100%;
+			font-family: sans-serif;
+			height: 50px;
+			display: block;
+		}
+		
+		#num {
+			text-align: center;
+		}
+
+		input[type='submit'] {
+			padding-left: 0;
+			padding-right: 0;
+		}
+
+		#num {
+			margin-bottom: 0;
+			height: 50px;
+		}
+		
+		table {
+			width: 100%;
+		}
+		
+		#chat {
+			height: 130px;
+			overflow-y: scroll;
+			margin-bottom: 10px;
+		}
+		
+		#chat p {
+			width: 100%;
+			margin-bottom: 4px;
+		}
+		
+		#chatbox {
+			padding: 2px;
+			height: 25px;
+		}
+		
+		#chat, #chatbox {
+			font-family: Roboto;
+		}
+		
+		#manage-row {
+			margin-top: -15px;
+			height: 35px;
+		}
+	</style>
+	<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.6/socket.io.js"></script>
+	<script>
+		window.addEventListener("beforeunload", function (event) {
+		  event.preventDefault();
+		});
+		var url = location.href.split('/')[location.href.split('/').length-1];
+		$(document).ready(function () {
+			
+			var socket = io();
+			$('#save-lesson-button').click(function(e) {
+				var whiteboard = document.getElementById('whiteboard');
+				var whiteboard_dataUrl = whiteboard.toDataURL();
+				socket.emit('save-lesson', {
+					lessonUrl: url,
+					image: whiteboard_dataUrl
+				});
+			});
+			
+			socket.emit('create-room', {
+				url: url,
+				classUrl: '<%= Class.classUrl %>'
+			});
+			
+			socket.on('change-user', function (data) {
+				$('#studentno').text(data.studentno.toString());	
+			});
+			
+			socket.on('return-results', function (data) {
+				var results = data.results;
+				$("#results").empty();
+				for (var i = 0; i < results.length; i++) {
+					var tr = $("<tr/>");
+					tr.append($("<td/>").text(i+1)).append($("<td/>").text(results[i]));
+					$("#results").append(tr);
+				}
+			})
+			
+			$("#poll").submit(function (e) {
+				e.preventDefault();
+				socket.emit('create-poll', {url: url, num: $("#num").val()});
+				console.log('emitted');
+			});
+			
+			$("#closepoll").click(function (e) {
+				e.preventDefault();
+				socket.emit('close-poll', {url: url});
+			});
+			
+			$("#toggle-chat").click(function (e) {
+				console.log('emitemitemit');
+				socket.emit('togglechat', {url: url});
+			});
+			
+			socket.on('student-message', function(data) {
+				$("#chat").append($("<p/>").text(data.message).css("color", "#999"));
+				$('#chat').animate({
+				scrollTop: $('#chat').get(0).scrollHeight}, 1000);
+				
+			});
+			
+			socket.on('teacher-message', function(data) {
+				$("#chat").append($("<p/>").text(data.message).css("color", "rgb(7, 148, 57)"));
+				$('#chat').animate({
+				scrollTop: $('#chat').get(0).scrollHeight}, 1000);
+				
+			});
+			
+			$("#chatbox").on("keypress", function(e) {
+				if (e.keyCode === 13 && $.trim($(this).val()) !== "") {
+					socket.emit('teacher-message', {url: url, message: $(this).val()});
+					$("#chatbox").val("");
+				}
+			});
+			
+
+			var canvas = $("canvas");
+			var context = canvas[0].getContext("2d");
+			var color = "#000";
+			var stroke = 10;
+			if ('<%= image %>' !== '') {
+				var image = new Image();
+				image.onload = function() {
+					context.drawImage(image, 0, 0);
+				}
+				image.src = '<%= image %>'
+			}
+
+			var curx = -1, cury = -1;
+
+			var mouseDown = false;
+
+			var actions = [];
+
+			context.lineJoin = 'round';
+
+			canvas.on('mousedown', function(e) {
+			    mouseDown = true;
+			    console.log("down");
+			}).on('mouseup', function(e) {
+			    mouseDown = false;
+			});
+
+			$("#colorPicker").on('change', function(e) {
+			    color = $(this).val();
+			});
+
+			$("#weightPicker").on('change', function(e) {
+			    stroke = parseInt($(this).val());
+			});
+
+			canvas.on('mousemove', function(e) {
+			    var rect = canvas[0].getBoundingClientRect();
+			    var mx = e.clientX - rect.left;
+			    var my = e.clientY - rect.top;
+			    
+			    
+			    if (curx == -1 && cury == -1) {
+			        curx = mx; cury = my;
+			    }
+			    
+			    if (mouseDown) {
+			        context.beginPath();
+			        context.moveTo(curx, cury);
+			        context.lineTo(mx, my);
+			        context.lineWidth = stroke;
+			        context.strokeStyle = color;
+			        context.closePath();
+			        context.stroke();
+			        socket.emit('draw', { url: url, fromPos: {x: curx, y: cury}, toPos: {x: mx, y: my}, stroke: stroke, color: color});
+			        console.log({"posFrom": {x: curx, y: cury}, "posTo": {x: mx, y: my}, "stroke": stroke, "color": color})
+			        curx = mx; cury = my;
+			        
+			    } else {
+			        curx = -1; cury = -1;
+			    }
+			});
+		});
+	</script>
+</head>
+<body>
+	<div class="container" id="main">
+		<header>
+			<ul>
+				<li><img src="/images/logo.png" id="logo"></li>
+			</ul>
+			<ul class="right">
+				<li><a class="button" href="/logout">Log Out</a></li>
+				<li><a class="button" href="/dashboard">Dashboard</a></li>
+				<li><a class="button" href="/class/<%= Class.classCode %>"><%= Class.className %></a></li>
+				<li><a class="button" href="/class/<%= Class.classCode %>/lesson/manage">LESSON MANAGEMENT</a></li>
+			</ul>
+		</header>
+		<div class="row">
+			<div class="nine columns">
+				<div id="board">
+					<div id="tools">
+						<h3><%= lesson.dataValues.lessonName %></h3>
+						<ul>
+							<li><input type='color' id="colorPicker"/></li>
+							<li><input type='range' min='1' max='100' step='2' value='10' id="weightPicker" class='u-full-width'/></li>
+							<hr>
+							<li><h5>POLL</h5></li>
+							<li><div class="poll-inactive"><form id="poll">
+								<input type='number' min='2' max='5' id="num" name="num">
+								<input type='submit'></input></form></div>
+								<div class="poll-active"><input type='submit' id='closepoll' value='Close Poll'></div></li>
+							
+							<table id="results"></table>
+						</ul>
+					</div>
+					<canvas width="700px" height="500px" class="u-pull-right" id="whiteboard"></canvas>
+				</div>
+			</div>
+			<div class="three columns">
+				<div id="video-container">
+					<audio id="myaudio" autoplay controls></audio>
+				</div>
+				<hr>
+				<div class="row" id="manage-row">
+					<p class='four columns'><span id="studentno">0</span> online</p>
+					<button class='button-primary eight columns' id="toggle-chat">toggle chat</button>
+				</div>
+				
+				<hr>
+				<div id="chat">
+				</div>
+				<input id="chatbox">
+				<button id="save-lesson-button" class="button button-primary">SAVE LESSON</a>
+		</div>
+	</div>
+	<script src="https://cdn.temasys.com.sg/skylink/skylinkjs/0.6.x/skylink.complete.js"></script>
+	<script>
+		var skylink = new Skylink();
+
+		skylink.on('peerJoined', function(peerId, peerInfo, isSelf) {
+		  if(isSelf) return; // We already have a video element for our video and don't need to create a new one.
+		  /*var vid = document.createElement('video');
+		  vid.autoplay = true;
+		  vid.muted = true; // Added to avoid feedback when testing locally
+		  vid.id = peerId;
+		  document.body.appendChild(vid);*/
+		});
+		
+		skylink.on('incomingStream', function(peerId, stream, isSelf) {
+		  if(isSelf) return;
+		  /*var vid = document.getElementById(peerId);
+		  attachMediaStream(vid, stream);*/
+		});
+		
+		skylink.on('peerLeft', function(peerId) {
+		  /*var vid = document.getElementById(peerId);
+		  document.body.removeChild(vid);*/
+		});
+		
+		skylink.on('mediaAccessSuccess', function(stream) {
+		  var audio = document.getElementById('myaudio');
+		  attachMediaStream(audio, stream);
+		});
+		
+		skylink.init({
+		  apiKey: '0a618ac3-a684-4e9b-aea2-6e813d36363e', // Get your own key at developer.temasys.com.sg
+		  defaultRoom: url
+		});
+
+		skylink.joinRoom({
+		  audio: true,
+		});
+		
+		
+		/* Helper functions */
+		
+		/*function getRoomId() {
+		  var roomId = document.cookie.match(/roomId=([a-z0-9-]{36})/);
+		  if(roomId) {
+		    return roomId[1];
+		  }
+		  else {
+		    roomId = skylink.generateUUID();
+		    var date = new Date();
+		    date.setTime(date.getTime() + (30*24*60*60*1000));
+		    document.cookie = 'roomId=' + roomId + '; expires=' + date.toGMTString() + '; path=/';
+		    return roomId;
+		  }
+		};*/
+	</script>
+</body>
+</html>

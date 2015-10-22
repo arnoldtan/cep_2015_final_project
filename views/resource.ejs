@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title><%= Class.className %></title>
+	<link rel="stylesheet" href="/styles/normalize.css">
+	<link rel="stylesheet" href="/styles/skeleton.css">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+	<style>
+	
+		* {
+			box-sizing: border-box;
+		}
+
+		html, body {
+			height: 100%;
+			width: 100%;
+			background-size: cover;
+			background-color: #fcfcfc;
+		}
+
+		#main {
+			width: 100%;
+			max-width: 100%;
+			color: #333;
+		}
+
+		header {
+			padding: 32px;
+			height: 96px;
+			background: linear-gradient(rgba(7, 148, 57, 1), rgba(7, 148, 57, 1));
+			width: 100%;
+			color: white;
+			position: fixed;
+			top: 0;
+			z-index: 10;
+		}
+
+		header ul {
+			list-style-type: none;
+			width: 50%;
+			float: left;
+		}
+
+		header ul li {
+			float: left;
+		}
+
+		#main .row {
+			width: 100%;
+			max-width: 100%;
+			padding-top: 2.5%;
+		}
+
+		#logo {
+			height: 32px;
+		}
+		
+		a.button {
+			color: white;
+		}
+		
+		.right li {
+			float: right;
+			margin-right: 1em;
+		}
+
+		#navbar {
+			background-color: #00FF99;
+			padding: 1em 1em 0 2em !important;
+			position: fixed;
+			top: 96px;
+			z-index: 10;
+			height: 80px;
+		}
+
+		#class-code-heading {
+			display: inline-block;
+		}
+
+		#delete-file-button {
+			background-color: #FFAE19;
+			border: 1px solid #FFAE19;
+		}
+
+		#delete-file-button:hover {
+			background-color: #F39D00;
+			border: 1px solid #F39D00;
+		}
+
+		hr {
+			background-color: black;
+			height: 1px;
+			margin: 0 0 1em 0;
+			padding: 0;
+		}
+
+		#content-wrapper {
+			margin-top: 120px;
+			text-align: center;
+		}
+
+	</style>
+	<script src="/scripts/jquery-2.1.4.min.js"></script>
+</head>
+<body>
+	<div class="container" id="main">
+		<header>
+			<ul>
+				<li><img src="/images/logo.png" id="logo"></li>
+			</ul>
+			<ul class="right">
+				<li><a class="button" href="/logout">Log Out</a></li>
+				<li><a class="button" href="/dashboard">Dashboard</a></li>
+				<li><a class="button" href="/class/<%= Class.classCode %>"><%= Class.className %></a></li>
+			</ul>
+		</header>
+		<div id="content-wrapper">
+			<h3>Resources</h3>
+			<% if (user.type === 'teacher') { %>
+				<form action="" method="post" enctype="multipart/form-data">
+					<input type="file" name="upload" required>
+					<input type="submit" value="Upload">
+				</form>
+			<% } %>
+			<% for (var i=files.length-1; i>-1; --i) { %>
+				<hr>
+				<div style="padding-right: 20em; margin: 2em">
+					<a href="/class/<%= Class.classCode %>/resource/<%= files[i] %>"><%= files[i] %></a>
+					<% if (user.type === 'teacher') { %>
+						<a style="float:right;" id="delete-file-button" class="button button-primary" href="/class/<%= Class.classCode %>/resource/delete/<%= files[i] %>">DELETE</a>
+					<% } %>
+				</div>
+			<% } %>
+		</div>
+	</div>
+	<script src="/scripts/jquery-2.1.4.min.js"></script>
+</body>
+</html>

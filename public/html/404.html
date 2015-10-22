@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Lesson</title>
+	<link rel="stylesheet" href="/styles/normalize.css">
+	<link rel="stylesheet" href="/styles/skeleton.css">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+	<style>
+	
+		* {
+			box-sizing: border-box;
+		}
+
+		html, body {
+			height: 100%;
+			width: 100%;
+		}
+
+		#main {
+			width: 100%;
+			height: 100%;
+			max-width: 100%;
+			background-size: cover;
+			background-color: #fcfcfc;
+			box-shadow: 0px 0px 10px 0px #969594;
+			color: #333;
+		}
+
+		header {
+			padding: 32px;
+			height: 96px;
+			background: linear-gradient(rgba(7, 148, 57, 1), rgba(7, 148, 57, 0.6));
+			width: 100%;
+			color: white;
+		}
+
+		header ul {
+			list-style-type: none;
+			width: 50%;
+			float: left;
+		}
+
+		header ul li {
+			float: left;
+		}
+
+		#main .row {
+			width: 100%;
+			max-width: 100%;
+			padding: 4%;
+			text-align: center;
+		}
+
+		#logo {
+			height: 32px;
+		}
+		
+		a.button {
+			color: white;
+		}
+		
+		.right li {
+			float: right;
+		}
+
+	</style>
+	<script src="/scripts/jquery-2.1.4.min.js"></script>
+</head>
+<body>
+	<div class="container" id="main">
+		<header>
+			<ul>
+				<li><img src="/images/logo.png" id="logo"></li>
+			</ul>
+			<ul class="right">
+				<li><a class="button" href="/logout">Log Out</a></li>
+			</ul>
+		</header>
+		<div class="row">
+			<h1>404 Not Found</h1>
+			<h3>The requested resource does not exist. Click <a href="/">here</a> to return to main page</h3>
+		</div>
+	</div>
+	<script>
+
+	</script>
+</body>
+</html>

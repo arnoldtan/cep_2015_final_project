@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Lesson</title>
+	<link rel="stylesheet" href="/styles/normalize.css">
+	<link rel="stylesheet" href="/styles/skeleton.css">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+	<style>
+		html, body {
+			width: 100%;
+			height: 100%;
+		}
+
+		#main {
+			width: 100%;
+			max-width: 100%;
+			background-size: cover;
+			background-color: #fcfcfc;
+			box-shadow: 0px 0px 10px 0px #969594;
+			color: #333;
+		}
+
+		header {
+			padding: 32px;
+			height: 32px;
+			background: linear-gradient(rgba(7, 148, 57, 1), rgba(7, 148, 57, 1));
+			max-width: 100%;
+			color: white;
+		}
+
+		header ul {
+			list-style-type: none;
+			width: 50%;
+			float: left;
+		}
+
+		#main .row {
+			max-width: 100%;
+			padding: 4%;
+		}
+
+		#tools {
+			width: calc(100% - 740px);
+			height: 100%;
+			float: left;
+		}
+
+		#tools ul {
+			list-style-type: none;
+		}
+
+		#tools ul li {
+			width: 100%;
+			font-size: 32px;
+			text-align: center;
+			list-style-type: none;
+		}
+
+		canvas {
+			border: 1px #f0f0f0 dashed;
+			background: #ffffff;
+		}
+
+		input[type='color'] {
+			outline: none;
+			border: none;
+			padding: 0;
+			height: 30px;
+			width: 30px;
+		}
+		
+		#logo {
+			height: 32px;
+		}
+		
+		.option {
+			height: 75px;
+			width: 75px;
+			text-align: center;
+			line-height: 75px;
+			font-size: 24px;
+			cursor: pointer;
+		}
+		
+		#chat {
+			height: 300px;
+			overflow-y: scroll;
+			margin-bottom: 10px;
+		}
+		
+		#chat p {
+			width: 100%;
+			margin-bottom: 4px;
+		}
+		
+		#chatbox {
+			width: 100%;
+			padding: 2px;
+			height: 25px;
+		}
+		
+		#chat, #chatbox {
+			font-family: Roboto;
+			display: none;
+		}
+
+		.right li {
+			float: right;
+		}
+
+	</style>
+	<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.6/socket.io.js"></script>
+	<script>
+		var url = location.href.split('/')[location.href.split('/').length-1];
+		$(document).ready(function () {
+			var socket = io();
+			
+			socket.emit('join-room', {url: url});
+			socket.on('change-user', function (data) {
+				$('#studentno').text(data.studentno.toString());	
+			});
+			socket.on('draw-update', function(data) {
+				console.log(data);
+				if (data.fromPos.x != -1 && data.fromPos.y != -1) {
+			        context.beginPath();
+			        context.moveTo(data.fromPos.x, data.fromPos.y);
+			        context.lineTo(data.toPos.x, data.toPos.y);
+			        context.lineWidth = data.stroke;
+			        context.strokeStyle = data.color;
+			        context.closePath();
+			        context.stroke();  
+			    }
+			});
+			
+			socket.on('openchat', function () {
+				console.log('open');
+				$("#chat, #chatbox").show();
+			});
+			socket.on('closechat', function () {
+				$("#chat, #chatbox").hide();
+			});
+			
+			socket.on('student-message', function(data) {
+				$("#chat").append($("<p/>").text(data.message).css("color", "#999"));
+				$('#chat').animate({
+				scrollTop: $('#chat').get(0).scrollHeight}, 1000);
+			});
+			
+			socket.on('teacher-message', function(data) {
+				$("#chat").append($("<p/>").text(data.message).css("color", "rgb(7, 148, 57)"));
+			
+				$('#chat').animate({
+				scrollTop: $('#chat').get(0).scrollHeight}, 1000);
+			});
+			
+			$("#chatbox").on("keypress", function(e) {
+				if (e.keyCode === 13 && $.trim($(this).val()) !== "") {
+					socket.emit('student-message', {url: url, message: $(this).val()});
+					$("#chatbox").val("");
+				}
+			});
+			
+			socket.on('show-poll', function(data) {
+				console.log('received');
+				$("#options").empty();
+				$("#options").slideDown();
+				for (var i = 0; i < data.num; i++) {
+					var div = $("<div/>");
+					div.text(i+1);
+					div.addClass("option");
+					div.data('option-no', i);
+					$("#options").append(div);
+				}
+			});
+			
+			$("#options").on('click', '.option', function() {
+				var optionNo = $(this).data('option-no');
+				socket.emit("submit-poll", {url: url, optionNo: optionNo});
+				$("#options").hide().empty();
+			});
+
+			var canvas = $("canvas");
+			var context = canvas[0].getContext("2d");
+			var color = "#000";
+			var stroke = 10;
+			if ('<%= image %>' !== '') {
+				var image = new Image();
+				image.onload = function() {
+					context.drawImage(image, 0, 0);
+				}
+				image.src = '<%= image %>'
+			}
+
+			context.lineJoin = 'round';
+
+			$("#colorPicker").on('change', function(e) {
+			    color = $(this).val();
+			});
+
+			$("#weightPicker").on('change', function(e) {
+			    stroke = parseInt($(this).val());
+			});
+		});
+	</script>
+</head>
+<body>
+	<div class="container" id="main">
+		<header>
+			<ul>
+				<li><img src="/images/logo.png" id="logo"></li>
+			</ul>
+			<ul class="right">
+				<li><a class="button" href="/logout">Log Out</a></li>
+				<li><a class="button" href="/dashboard">Dashboard</a></li>
+				<li><a class="button" href="/class/<%= Class.classCode %>"><%= Class.className %></a></li>
+			</ul>
+		</header>
+		<div class="row">
+			<div class="eight columns">
+				<div id="board">
+					<h3><%= lesson.dataValues.lessonName %></h3>
+					<div id="tools">
+						<h5>POLL</h5>
+						<div id="options"></div>
+					</div>
+					<canvas width="700px" height="500px" class="u-pull-right" id="whiteboard"></canvas>
+				</div>
+			</div>
+			<div class="four columns">
+				<div id="video-container"></div>
+				<p><span id="studentno"></span> students online</p>
+				<hr>
+				<div id="chat">
+				</div>
+				<input id="chatbox">
+			</div>
+		</div>
+	</div>
+	<script src="https://cdn.temasys.com.sg/skylink/skylinkjs/0.6.x/skylink.complete.js"></script>
+	<script>
+		var skylink = new Skylink();
+		var teacher = '';
+
+		skylink.on('peerJoined', function(peerId, peerInfo, isSelf) {
+		  if(isSelf) return; // We already have a video element for our video and don't need to create a new one.
+		  var audio = document.createElement('audio');
+		  audio.autoplay = true;
+		  //audio.muted = true; // Added to avoid feedback when testing locally
+		  audio.controls = true;
+		  audio.id = peerId;
+		  audio.style.display = 'none';
+		  document.body.appendChild(audio);
+		});
+		
+		skylink.on('incomingStream', function(peerId, stream, isSelf) {
+		  if(isSelf) return;
+		  var audio = document.getElementById(peerId);
+		  attachMediaStream(audio, stream);
+		});
+		
+		skylink.on('peerLeft', function(peerId) {
+		  var audio = document.getElementById(peerId);
+		  document.body.removeChild(audio);
+		});
+		
+		/*skylink.on('mediaAccessSuccess', function(stream) {
+		  var audio = document.getElementById('myaudio');
+		  attachMediaStream(audio, stream);
+		});*/
+		
+		skylink.init({
+		  apiKey: '0a618ac3-a684-4e9b-aea2-6e813d36363e', // Get your own key at developer.temasys.com.sg
+		  defaultRoom: url
+		});
+
+		skylink.joinRoom({});
+		
+		
+		/* Helper functions */
+		
+		/*function getRoomId() {
+		  var roomId = document.cookie.match(/roomId=([a-z0-9-]{36})/);
+		  if(roomId) {
+		    return roomId[1];
+		  }
+		  else {
+		    roomId = skylink.generateUUID();
+		    var date = new Date();
+		    date.setTime(date.getTime() + (30*24*60*60*1000));
+		    document.cookie = 'roomId=' + roomId + '; expires=' + date.toGMTString() + '; path=/';
+		    return roomId;
+		  }
+		};*/
+	</script>
+</body>
+</html>

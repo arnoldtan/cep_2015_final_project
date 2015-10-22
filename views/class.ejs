@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title><%= Class.className %></title>
+	<link rel="stylesheet" href="/styles/normalize.css">
+	<link rel="stylesheet" href="/styles/skeleton.css">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+	<style>
+	
+		* {
+			box-sizing: border-box;
+		}
+
+		html, body {
+			height: 100%;
+			width: 100%;
+			background-size: cover;
+			background-color: #fcfcfc;
+		}
+
+		#main {
+			width: 100%;
+			max-width: 100%;
+			color: #333;
+		}
+
+		header {
+			padding: 32px;
+			height: 96px;
+			background: linear-gradient(rgba(7, 148, 57, 1), rgba(7, 148, 57, 1));
+			width: 100%;
+			color: white;
+			position: fixed;
+			top: 0;
+			z-index: 10;
+		}
+
+		header ul {
+			list-style-type: none;
+			width: 50%;
+			float: left;
+		}
+
+		header ul li {
+			float: left;
+		}
+
+		#main .row {
+			width: 100%;
+			max-width: 100%;
+			padding-top: 2.5%;
+		}
+
+		#logo {
+			height: 32px;
+		}
+		
+		a.button {
+			color: white;
+		}
+		
+		.right li {
+			float: right;
+			margin-right: 1em;
+		}
+
+		#navbar {
+			background-color: #00FF99;
+			padding: 1em 1em 0 2em !important;
+			position: fixed;
+			top: 96px;
+			z-index: 10;
+			height: 80px;
+		}
+
+		#class-code-heading {
+			display: inline-block;
+		}
+
+		#resource-button {
+			background-color: #FFAE19;
+			border: 1px solid #FFAE19;
+		}
+
+		#resource-button:hover {
+			background-color: #F39D00;
+			border: 1px solid #F39D00;
+		}
+
+		#forum {
+			margin-top: 176px;
+			padding-top: 2em;
+			z-index: 0;
+		}
+
+		#post-form-content, #post-form-submit-button {
+			display: block;
+			margin: 0 auto;
+		}
+
+		.post {
+			background-color: #FAE1DD;
+			text-align: left;
+			width: 50%;
+			border-radius: 10px;
+			padding: 1.5em;
+			margin-left: auto;
+			margin-right: auto;
+			margin-top: 1em;
+			opacity: 0.7;
+			overflow: scroll;
+		}
+
+		.post h3, .comment h3,
+		.edit-post-button, .delete-post-button,
+		.edit-comment-button, .delete-comment-button {
+			display: inline-block;
+		}
+
+		.edit-post-button, .delete-post-button,
+		.edit-comment-button, .delete-comment-button {
+			float: right;
+		}
+
+		.delete-post-button, .delete-comment-button {
+			background-color: #FFAE19 !important;
+			border: 1px solid #FFAE19 !important;
+		}
+
+		.delete-post-button:hover, .delete-comment-button:hover {
+			background-color: #F39D00 !important;
+			border: 1px solid #F39D00 !important;
+		}
+
+		.hide {
+			display: none !important;
+		}
+
+		.post-edit-content, .comment-edit-content {
+			display: block;
+			font-size: 1.5em;
+		}
+
+		hr {
+			background-color: black;
+			height: 1px;
+			margin: 0 0 1em 0;
+			padding: 0;
+		}
+
+	</style>
+	<script src="/scripts/jquery-2.1.4.min.js"></script>
+</head>
+<body>
+	<div class="container" id="main">
+		<header>
+			<ul>
+				<li><img src="/images/logo.png" id="logo"></li>
+			</ul>
+			<ul class="right">
+				<li><a class="button" href="/logout">Log Out</a></li>
+				<li><a class="button" href="/dashboard">Dashboard</a></li>
+			</ul>
+		</header>
+		<div class="row" id="navbar">
+			<div class="three columns">
+				<h3 style="overflow:hidden"><%= Class.className %></h3>
+			</div>
+			<% if (user.type === 'teacher') { %>
+				<div class="five columns">
+					<h6 id="class-code-heading">Class Code:</h6>
+					<input type="text" id="class-code" value="<%= Class.classCode %>" disabled>
+					<input type="button" id="copy-to-clipboard" value="COPY TO CLIPBOARD">
+				</div>
+				<div class="two columns">
+					<input type="button" id="manage-lesson-button" class="button button-primary" value="LESSON MANAGEMENT">
+				</div>
+			<% } else if (user.type === 'student') { %>
+				<div class="seven columns">
+					<h5 id="lesson-status">There are no live lessons right now.</h5>
+				</div>
+			<% } %>
+			<div class="two columns">
+				<a href="/class/<%= Class.classCode %>/resource" class="button button-primary" id="resource-button">Resources</a>
+			</div>
+		</div>
+		<div id="forum">
+			<form action="/post/add" method="post">
+				<input type="text" style="display:none" name="classCode" value="<%= Class.classCode %>">
+				<textarea id="post-form-content" rows="20" cols="80" name="content" placeholder="Type your post here"></textarea>
+				<input id="post-form-submit-button" type="submit" value="POST">
+			</form>
+			<% for (var i=posts.length-1; i>-1; --i) { %>
+				<div class="post" id="p<%= posts[i].dataValues.id %>">
+					<h3><%= posts[i].dataValues.User.username %></h3>
+					<p style="font-size:12px; display:inline-block; margin-bottom:0"><%= posts[i].dataValues.updatedAt %></p>
+					<% if (posts[i].dataValues.User.id === user.id) { %>
+						<button class="delete-post-button button button-primary">Delete</button>
+						<button class="edit-post-button button button-primary">Edit</button>
+					<% } %>
+					<p class="post-content" style="font-size:24px"><%= posts[i].dataValues.content %></p>
+					<textarea class="post-edit-content hide"><%= posts[i].dataValues.content %></textarea>
+					<button class="submit-edit-post-button hide">EDIT POST</button>
+					<input style="float:left; margin-bottom:0" type="button" value="SHOW COMMENTS" class="show-comment-button">
+					<input style="float:left; margin-bottom:0" type="button" value="HIDE COMMENTS" class="hide hide-comment-button">
+					<div class="hide comment-section">
+						<form action="/comment/add" method="post">
+							<input type="text" style="display:none" name="classCode" value="<%= Class.classCode %>">
+							<input type="text" style="display:none" name="postId" value="<%= posts[i].dataValues.id %>">
+							<textarea class="comment-form-content" name="content" placeholder="Type your comment here" style="display:inline-block;" cols="60"></textarea>
+							<input id="comment-button" style="display:inline-block; margin-top: 1em; vertical-align: top" type="submit" value="COMMENT">
+						</form>
+						<% for (var j=posts[i].dataValues.Comments.length-1; j>-1; --j) { %>
+							<div class="comment" id="c<%= posts[i].dataValues.Comments[j].dataValues.id %>">
+								<hr>
+								<h3><%= posts[i].dataValues.Comments[j].dataValues.User.dataValues.username %></h3>
+								<p style="font-size:12px; display:inline-block; margin-bottom:0"><%= posts[i].dataValues.Comments[j].dataValues.updatedAt %></p>
+								<% if (posts[i].dataValues.Comments[j].dataValues.User.dataValues.id === user.id) { %>
+									<button class="delete-comment-button button button-primary">Delete</button>
+									<button class="edit-comment-button button button-primary">Edit</button>
+								<% } %>
+								<p class="comment-content" style="font-size:24px"><%= posts[i].dataValues.Comments[j].dataValues.content %></p>
+								<textarea class="comment-edit-content hide"><%= posts[i].dataValues.Comments[j].dataValues.content %></textarea>
+								<button class="submit-edit-comment-button hide">EDIT COMMENT</button>
+							</div>
+						<% } %>
+					</div>
+				</div>
+			<% } %>
+	</div>
+	<script src="/scripts/jquery-2.1.4.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.6/socket.io.js"></script>
+	<script>
+		var socket = io();
+			
+		socket.emit('enter-class', { classUrl: '<%= Class.classUrl %>' });
+
+		socket.on('gotLesson', function(data) {
+			$('#lesson-status').html("Click <a href='/class/<%= Class.classCode %>/lesson/r/" + data.lessonUrl + "'>here</a> to view live lesson.");
+		});
+		socket.on('noLesson', function() {
+			$('#lesson-status').html("There are no live lessons right now.");
+		});
+
+		if ('<%= user.type %>' === 'teacher') {
+			var copied = false;
+			var copy_to_clipboard = document.getElementById('copy-to-clipboard');
+			copy_to_clipboard.addEventListener('click', function(e) {
+				window.getSelection().removeAllRanges();
+				var range = document.createRange();
+				range.selectNode(document.getElementById('class-code'));
+				window.getSelection().addRange(range);
+				try {
+					var successful = document.execCommand('copy');  
+	    		var msg = successful ? 'successful' : 'unsuccessful';  
+	    		console.log('Copy class code command was ' + msg);  
+	  		} catch(err) {  
+	    		console.log('Oops, unable to copy');  
+	  		}
+	  		window.getSelection().removeAllRanges();
+			});
+
+			var manage_lesson_button = document.getElementById('manage-lesson-button');
+			manage_lesson_button.addEventListener('click', function(e) {
+				location.href += '/lesson/manage';
+			});
+		}
+
+		$(document).ready(function() {
+			$('.post').hover(function(e) {
+				$(this).fadeTo(100, 1);
+			}, function(e) {
+				$(this).fadeTo(100, 0.7);
+			});
+
+			$(location.hash).children('.hide-comment-button').toggleClass('hide');
+			$(location.hash).children('.show-comment-button').toggleClass('hide');
+			$(location.hash).children('.comment-section').toggleClass('hide');
+		});
+
+		$('.delete-post-button').click(function(e) {
+			var that = $(this);
+			$.ajax('/post/' + $(this).parent().attr('id').substring(1), {
+				statusCode: {
+					200: function() {
+						that.parent().remove();
+					}
+				},
+				method: 'DELETE'
+			});
+		});
+
+		$('.edit-post-button').click(function(e) {
+			$(this).parent().children('.post-content').toggleClass('hide');
+			$(this).parent().children('.post-edit-content').val($(this).parent().children('.post-content').html());
+			$(this).parent().children('.post-edit-content').toggleClass('hide');
+			$(this).parent().children('.submit-edit-post-button').toggleClass('hide');
+		});
+
+		$('.submit-edit-post-button').click(function(e) {
+			var that = $(this);
+			$.ajax('/post/' + $(this).parent().attr('id').substring(1), {
+				statusCode: {
+					400: function() {
+						that.parent().children('.post-content').toggleClass('hide');
+						that.parent().children('.post-edit-content').toggleClass('hide');
+						that.parent().children('.submit-edit-post-button').toggleClass('hide');
+					},
+					200: function() {
+						that.parent().children('.post-content').html(that.parent().children('.post-edit-content').val());
+						that.parent().children('.post-content').toggleClass('hide');
+						that.parent().children('.post-edit-content').toggleClass('hide');
+						that.parent().children('.submit-edit-post-button').toggleClass('hide');
+					}
+				},
+				method: 'PUT',
+				data: {
+					content: that.parent().children('.post-edit-content').val()
+				}
+			})
+		});
+
+		$('.show-comment-button').click(function(e) {
+			$(this).toggleClass('hide');
+			$(this).parent().children('.hide-comment-button').toggleClass('hide');
+			$(this).parent().children('.comment-section').toggleClass('hide');
+		});
+
+		$('.hide-comment-button').click(function(e) {
+			$(this).toggleClass('hide');
+			$(this).parent().children('.show-comment-button').toggleClass('hide');
+			$(this).parent().children('.comment-section').toggleClass('hide');
+		});
+
+		$('.delete-comment-button').click(function(e) {
+			var that = $(this);
+			$.ajax('/comment/' + $(this).parent().attr('id').substring(1), {
+				statusCode: {
+					200: function() {
+						that.parent().remove();
+					}
+				},
+				method: 'DELETE'
+			});
+		});
+
+		$('.edit-comment-button').click(function(e) {
+			$(this).parent().children('.comment-content').toggleClass('hide');
+			$(this).parent().children('.comment-edit-content').val($(this).parent().children('.comment-content').html());
+			$(this).parent().children('.comment-edit-content').toggleClass('hide');
+			$(this).parent().children('.submit-edit-comment-button').toggleClass('hide');
+		});
+
+		$('.submit-edit-comment-button').click(function(e) {
+			var that = $(this);
+			$.ajax('/comment/' + $(this).parent().attr('id').substring(1), {
+				statusCode: {
+					400: function() {
+						that.parent().children('.comment-content').toggleClass('hide');
+						that.parent().children('.comment-edit-content').toggleClass('hide');
+						that.parent().children('.submit-edit-comment-button').toggleClass('hide');
+					},
+					200: function() {
+						that.parent().children('.comment-content').html(that.parent().children('.comment-edit-content').val());
+						that.parent().children('.comment-content').toggleClass('hide');
+						that.parent().children('.comment-edit-content').toggleClass('hide');
+						that.parent().children('.submit-edit-comment-button').toggleClass('hide');
+					}
+				},
+				method: 'PUT',
+				data: {
+					content: that.parent().children('.comment-edit-content').val()
+				}
+			})
+		});
+
+	</script>
+</body>
+</html>

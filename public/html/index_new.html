@@ -1,0 +1,517 @@
+<html>
+	<head>
+		<title>OnBoard</title>
+	    <link href='https://fonts.googleapis.com/css?family=Poiret+One' rel='stylesheet' type='text/css'>
+		<link href='https://fonts.googleapis.com/css?family=Lobster' rel='stylesheet' type='text/css'>
+		<link href='https://fonts.googleapis.com/css?family=Passion+One' rel='stylesheet' type='text/css'>
+		<link href='https://fonts.googleapis.com/css?family=Sigmar+One' rel='stylesheet' type='text/css'>
+		<link href='https://fonts.googleapis.com/css?family=Montserrat:400,700' rel='stylesheet' type='text/css'>
+	    <link href="/styles/bootstrap.min.css" rel="stylesheet">
+	    <style>
+	    	.nav-sidebar {
+					font-family: 'Poiret One', cursive;
+					font-size: 20px;
+					background-color: white;
+					margin-left: -30px;
+					margin-top: 50px;
+				}
+
+
+				.nav-sidebar > .active > li > a,
+				.nav-sidebar > .active > li > a:hover,
+				.nav-sidebar > .active > li > a:focus {
+				  color: #fff;
+				  background-color: #428bca;
+				  border-bottom: 5px, solid #48a9c0;
+				}
+
+				img#headpic{
+					width: 100%;
+					position:fixed;
+					top:0;
+				}
+
+				img#frontpic{
+					width: 100%;
+					height: 100%;
+					z-index: -10;
+					position:fixed;
+				}
+
+				img#midpic{
+					width: 100%;
+					height: 200%;
+					z-index: -10;
+					position:fixed;
+				}
+
+				#what{
+					margin-top: 50%;
+					width:100%;
+					height:30%;
+				    background-color: black;
+				    border-radius: 3px;
+				    opacity: 0.7;
+				    -webkit-filter: alpha(opacity=70);
+				    margin-bottom: 20%;
+				}
+
+				#whattext{
+					margin-top: 5%;
+					width:100%;
+					height:30%;
+				    background-color: black;
+				    border-radius: 3px;
+				    opacity: 0.7;
+				    -webkit-filter: alpha(opacity=70);
+				}
+
+				#what h2{
+					color:white;
+					font-size: 10vh;
+				}
+
+				#reg{
+					margin-top: 50%;
+					width:100%;
+					height:30%;
+				    background-color: black;
+				    border-radius: 3px;
+				    opacity: 0.9;
+				    -webkit-filter: alpha(opacity=70);
+				    margin-bottom: 10%;
+				    padding-bottom: 5%
+				}
+
+				.top > form,
+				.top > a,
+				.top > p,
+				.top > h3{
+					margin-left: auto;
+					margin-top: 50%;
+					font-family: "Sigmar One", cursive;
+					width: 100%;
+
+				}
+
+				input{
+					height:20%;
+				}
+
+				.loginbtn{
+					background-color: transparent;
+					color:white;
+				}
+
+				html, body{
+					height: 100%;
+					width: 100%;
+				}
+
+				.withbg{
+					width: 100%;
+					height:100%;
+					position: fixed;
+					top: 0px;
+					z-index:-100;
+					background: url("507.jpg");
+					background-size: 150% 150%;
+					/*filter: blur(5px);*/
+					-webkit-filter: blur(3.5px);
+					overflow: hidden;
+				}
+
+				.withbg2{
+					width: 100%;
+					height:100%;
+					position: fixed;
+					z-index:-100;
+					background: url("bluepoly.jpg");
+					background-size: 150% 150%;
+					overflow: hidden;
+					top:10%;
+				}
+
+				.title{
+					width:50%;
+					display: table;
+					margin:auto;
+					overflow: visible;
+				}
+
+				.subtitle{
+					width:70%;
+					height: auto;
+					display: table;
+					margin: 20% auto;
+					top:100%;
+				}
+
+				.content: {
+					width:70%;
+					height: auto;
+					display: table;
+					margin: 15% auto;
+					background-color: black;
+				}
+
+				.logindiv{
+					width:100%;
+					height: 100%;
+					display: table;
+					margin: 0% auto;
+					overflow: visible;
+				}
+
+				.post{
+					width:80%;
+					border: 3px solid gray;
+					border-radius: 10px;
+					background-color: white;
+				}
+
+				.classlist{
+					width:80%;
+					height:10%;
+					border: 3px solid black;
+					border-radius: 10px;
+					background-color: white;
+				}
+
+				.header,
+				.header h2{
+					font-size: 10vh;
+				}
+
+				.centered{
+					display: table;
+					margin:auto;
+				}
+
+				.formpad{
+					padding-top: 2%;
+				}
+
+				.fullwidth{
+					width:100%;
+					max-width:100%;
+					border-radius: 10px;
+				}
+
+				.postwrite{
+					max-height: 70%;
+				}
+
+				.postadd{
+					padding-top: 3%;
+					margin-top: 10%;
+					height: 30%;
+					max-height: 70%;
+					width: 99%;
+				}
+
+				.btnstyle{
+					width:30%;
+					top:0;
+					float:right;
+				}
+
+				.postbtn{
+					background-color: #000052;
+				}
+
+				.editbtn{
+					background-color: #33C3F0;
+					color: white;
+				}
+
+				.delbtn{
+					background-color: #FF9B82;
+					color:white;
+				}
+
+				.translucent{
+					opacity: .8;
+				    -webkit-filter: alpha(opacity=80);
+				}
+
+				.fontw{
+					color: white;
+				}
+
+				.fontb{
+					color: black;
+				}
+
+				h1{
+					font-family: "Poiret One";
+					font-size: 12vw;
+					margin-left: 0 auto;
+					z-index: 100;
+					color: black;
+				}
+
+				h2{
+					font-size: 10vh;
+					margin-left: 0 auto;
+					z-index: 100;
+					text-decoration: none;
+				}
+
+				h3{
+					font-size: 5vh;
+					margin-left: 0 auto;
+					z-index: 100;
+				}
+
+				p{
+					font-size: 4vh;
+					margin-left: 0 auto;
+					z-index: 100;
+				}
+
+				.fontpao{
+					font-family: "Passion One";
+				}
+
+				.fontpoio{
+					font-family: "Poiret One";
+				}
+
+				.fontmont{
+					font-family: "Montserrat", sans-serif;
+				}
+
+				.nav{
+					height: 30%;
+					width:100%;
+					display: table;
+					margin:auto;
+					background-color: white;
+					position:fixed;
+					top:0px;
+					z-index: 100;
+					/*background: url(multicoloured.jpg);*/
+				}
+
+				.smallnav{
+					height: 5%;
+					width:100%;
+					display: table;
+					margin:auto;
+					background-color: white;
+					position:fixed;
+					top:0px;
+					z-index: 100;
+				}
+
+				.form-inline{
+					display: table;
+					margin:auto;
+					border-radius: 5px;
+				}
+
+				div.button > h2{
+					font-size: 40pt;
+					font-family: "Passion One", cursive;
+				}
+
+				a#button1{
+					display: block;
+					position:relative;
+					width:50%;
+					bottom:10;
+				}
+				a#button2{
+					display: block;
+					position: relative;
+					width:50%;
+					left:50%;
+					bottom: 95;
+					overflow: hidden;
+				}
+
+				div.footer{
+					position: absolute;
+					margin-top: 25%;
+					margin-left: 35%;
+					padding-bottom: 0px;
+					width: 50%;
+					height: 5%;
+					font-size: 20pt;
+					font-family: "Poiret One", cursive;
+					color:black;
+					z-index: 10;
+				}
+
+				.add{
+					display: table;
+					margin: 0 auto;
+					font-size: 5vh;
+				}
+
+				.addcontainer {
+					position: fixed;
+					top: 10%;
+					right: 0%;
+					width: 100%;
+				}
+
+				#humansearch{
+					display: table;
+					margin: 0 auto;
+					width:50%;
+					font-size: 25px;
+				}
+
+				.tabrow {
+				    text-align: center;
+				    list-style: none;
+				    margin: 0px 0 20px;
+				    padding: 0;
+				    line-height: 24px;
+				    height: 26px;
+				    overflow: hidden;
+				    font-size: 15px;
+				    font-family: verdana;
+				    position: relative;
+				}
+				.tabrow li {
+				    border: 1px solid #AAA;
+				    background: #D1D1D1;
+				    background: -o-linear-gradient(top, #ECECEC 50%, #D1D1D1 100%);
+				    background: -ms-linear-gradient(top, #ECECEC 50%, #D1D1D1 100%);
+				    background: -moz-linear-gradient(top, #ECECEC 50%, #D1D1D1 100%);
+				    background: -webkit-linear-gradient(top, #ECECEC 50%, #D1D1D1 100%);
+				    background: linear-gradient(top, #ECECEC 50%, #D1D1D1 100%);
+				    display: inline-block;
+				    position: relative;
+				    z-index: 0;
+				    border-top-left-radius: 6px;
+				    border-top-right-radius: 6px;
+				    box-shadow: 0 3px 3px rgba(0, 0, 0, 0.4), inset 0 1px 0 #FFF;
+				    text-shadow: 0 1px #FFF;
+				    margin: 0 -5px;
+				    padding: 0 20px;
+				}
+				.tabrow a {
+					  color: #555;
+					  text-decoration: none;
+				}
+				.tabrow li.selected {
+				    background: #FFF;
+				    color: #333;
+				    z-index: 2;
+				    border-bottom-color: #FFF;
+				}
+				.tabrow:before {
+				    position: absolute;
+				    content: " ";
+				    width: 100%;
+				    bottom: 0;
+				    left: 0;
+				    border-bottom: 1px solid #AAA;
+				    z-index: 1;
+				}
+				.tabrow li:before,
+				.tabrow li:after {
+				    border: 1px solid #AAA;
+				    position: absolute;
+				    bottom: -1px;
+				    width: 5px;
+				    height: 5px;
+				    content: " ";
+				}
+				.tabrow li:before {
+				    left: -6px;
+				    border-bottom-right-radius: 6px;
+				    border-width: 0 1px 1px 0;
+				    box-shadow: 2px 2px 0 #D1D1D1;
+				}
+				.tabrow li:after {
+				    right: -6px;
+				    border-bottom-left-radius: 6px;
+				    border-width: 0 0 1px 1px;
+				    box-shadow: -2px 2px 0 #D1D1D1;
+				}
+				.tabrow li.selected:before {
+				    box-shadow: 2px 2px 0 #FFF;
+				}
+				.tabrow li.selected:after {
+				    box-shadow: -2px 2px 0 #FFF;
+				}
+	    </style>
+	    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+	</head>
+
+	<body>
+		<div class="nav">
+			<img src="topbar.png" id="headpic"/>
+		</div>
+		<div class="withbg" id="top"></div>
+		<div class="subtitle"> 
+			<div class="translucent" style="background-color: #B20000; padding: 1em 0 1em 0;"><h2 class="centered fontw fontpao">your classroom for the<br>21st century</h2></div>
+			<div class="translucent" style="background-color:#800000; padding-top:0%; padding-bottom:1%;"><a href="#what"><h3 class="centered fontw"><span class="glyphicon glyphicon-question-sign"/></h3></a></div>
+			<div class="translucent" style="background-color:#4C0000; padding-bottom:1%; ">
+				<div class="logindiv">
+					<form class="form-inline" action="/login" method="post">
+						<div class="form-group" style="margin-right: 0.5em">
+					    	<input type="text" class="form-control fontmont" id="exampleInputName2" placeholder="username" name="username" required>
+						</div>
+						<div class="form-group" style="margin-right: 0.5em">
+					    	<input type="password" class="form-control fontmont" id="exampleInputEmail2" placeholder="password" name="password" required>
+						</div>
+					  <button style="margin-right: 0.5em" type="submit" class="btn btn-default loginbtn fontmont">login</button>
+					  <a href="#reg" class="btn btn-default loginbtn fontmont">register</a>
+					</form>
+				</div>
+			</div>
+		</div>
+		<div class="subtitle" id="what">
+			</div>
+		<div id="whattext">
+			<h2 class="centered fontw fontpao">anyone can teach.</h2><br>
+			<h2 class="centered fontw fontpao">anyone can learn.</h2>
+		</div>
+		<div class="" style="background-color:#800000; padding-top:1%; padding-bottom:1.5%;">
+			<h2 class="centered fontw fontpao">everyone is welcome <span class="fontpoio">onboard</span></h2>
+			<!--<a href="#top" class="btn btn-default loginbtn fontmont centered">to top</a>-->
+		</div>
+		<div class="subtitle" id="reg">
+			<h2 class="fontpoio centered fontw"> Create account </h2>
+			<ul class="tabrow">
+					  <li id="signup-teacher" class="selected"><a href="#">Teacher</a></li>
+					  <li id="signup-student"><a href="#">Student</a></li>
+					</ul>
+			<form class="centered" action="/signup" method="post">
+						<div class="form-group">
+					    	<input type="text" class="form-control fontmont" id="exampleInputName2" placeholder="username" name="username" required>
+						</div>
+						<div class="form-group">
+					    	<input type="password" class="form-control fontmont" id="exampleInputEmail2" placeholder="password" name="password" required>
+						</div>
+						<input id="signup-type" type="text" name="type" value="teacher" style="display:none" required>
+						<button type="submit" class="btn btn-default loginbtn fontmont fullwidth">register</button>
+			</form>
+		</div>
+		<script src="/scripts/jquery-2.1.4.min.js"></script>
+		<script>
+			$(function() {
+				var signup_type = document.getElementById('signup-type');
+				$("#signup-teacher").click(function(e) {
+				  e.preventDefault();
+				  $("li").removeClass("selected");
+				  $(this).addClass("selected");
+				  signup_type.value = 'teacher';
+				});
+
+				$("#signup-student").click(function(e) {
+				  e.preventDefault();
+				  $("li").removeClass("selected");
+				  $(this).addClass("selected");
+				  signup_type.value = 'student';
+				});
+			});
+		</script>
+	</body>
+</html>

@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Dashboard</title>
+	<link rel="stylesheet" href="/styles/normalize.css">
+	<link rel="stylesheet" href="/styles/skeleton.css">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+	<style>
+	
+		* {
+			box-sizing: border-box;
+		}
+
+		html, body {
+			height: 100%;
+			width: 100%;
+			background-size: cover;
+			background-color: #fcfcfc;
+		}
+
+		#main {
+			width: 100%;
+			max-width: 100%;
+			color: #333;
+		}
+
+		header {
+			padding: 32px;
+			height: 96px;
+			background: linear-gradient(rgba(7, 148, 57, 1), rgba(7, 148, 57, 1));
+			width: 100%;
+			color: white;
+			position: fixed;
+			top: 0;
+		}
+
+		header ul {
+			list-style-type: none;
+			width: 50%;
+			float: left;
+		}
+
+		header ul li {
+			float: left;
+		}
+
+		#main .row {
+			width: 100%;
+			max-width: 100%;
+			padding-top: 2.5%;
+			margin-top: 96px;
+		}
+
+		#logo {
+			height: 32px;
+		}
+		
+		a.button {
+			color: white;
+		}
+		
+		.right li {
+			float: right;
+			margin-right: 1em;
+		}
+
+		.add-class {
+			font-size: 1em;
+			text-align: center;
+		}
+
+		.class-list {
+			list-style-type: none;
+			text-align: center;
+			font-size: 2em;
+		}
+
+		.class-list a:link, .class-list a:visited, .class-list a:hover, .class-list a:active {
+			text-decoration: none;
+			color: #000;
+		}
+
+		.class-list li {
+			margin: 0;
+			padding: 1em;
+			border-bottom: solid 1px;
+			cursor: pointer;
+			opacity: 0.5;
+			background-color: #4CFF4C;
+		}
+
+		.class-list li:first-child {
+			border-top: solid 1px;
+		}
+
+		.class-list-heading {
+			text-align: center;
+		}
+
+		#class-list-panel {
+			
+		}
+
+
+	</style>
+	<script src="/scripts/jquery-2.1.4.min.js"></script>
+</head>
+<body>
+	<div class="container" id="main">
+		<header>
+			<ul>
+				<li><img src="/images/logo.png" id="logo"></li>
+			</ul>
+			<ul class="right">
+				<li><a class="button" href="/logout">Log Out</a></li>
+			</ul>
+		</header>
+		<div class="row" id="class-list-panel">
+			<% if (user.type === 'teacher') { %>
+				<form class="add-class" action="/class/add" method="post">
+					<input type="text" placeholder="Class Name" name="className">
+					<input type="submit" value="Add Class">
+				</form>
+			<% } else if (user.type === 'student') { %>
+				<form class="add-class" action="/class/join" method="post">
+					<input type="text" placeholder="Class Code" name="classCode">
+					<input type="submit" value="Join Class">
+				</form>
+			<% } %>
+
+			<h4 class="class-list-heading">Your Classes</h4>
+			<ul class="class-list">
+				<% for (var i=0; i<classes.length; ++i) { %>
+					<li><a href="/class/<%= classes[i].dataValues.classCode %>"><%= classes[i].dataValues.className %></a></li>
+				<% } %>
+			</ul>
+		</div>
+	</div>
+	<script>
+		$(document).ready(function() {
+			$('.class-list li').hover(function(e) {
+				$(this).fadeTo(100, 1);
+			}, function(e) {
+				$(this).fadeTo(100, 0.5);
+			});
+			$('.class-list li').click(function(e) {
+				console.log($(this).children());
+				window.location = $(this).children()[0].href;
+			});
+		});
+	</script>
+</body>
+</html>
